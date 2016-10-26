@@ -20,7 +20,11 @@ function Paddle(isLeft) {
 Paddle.prototype = {
   constructor: Paddle,
   WIDTH: 20,
-  HEIGHT: 50,
+  HEIGHT: 100,
+
+  render: function() {
+    context.fillRect(this.x, this.y, this.WIDTH, this.HEIGHT);
+  },
 };
 
 /**
@@ -32,8 +36,12 @@ function Player(isLeft) {
   this.paddle = new Paddle(isLeft);
 }
 
-var human = Player(true);
-var computer = Player(false);
+Player.prototype.render = function() {
+  this.paddle.render();
+};
+
+var human = new Player(true);
+var computer = new Player(false);
 
 /*
   Following the YAGNI principle. I don't want to split this into a class and
@@ -45,5 +53,22 @@ var computer = Player(false);
 var ball = {
   x: canvas.width / 2,
   y: canvas.height / 2,
-  RADUIS: 10,
+  RADIUS: 10,
+
+  render: function() {
+    context.beginPath();
+    context.arc(this.x, this.y, this.RADIUS, 0, Math.PI * 2);
+    context.fill();
+  },
+};
+
+function render() {
+  context.fillStyle = '#fff';
+  human.render();
+  computer.render();
+  ball.render();
+}
+
+window.onload = function() {
+  render();
 };
