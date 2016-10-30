@@ -74,7 +74,7 @@ Ball.prototype = {
   RADIUS: 10,
 
   // Pixels per millisecond in both x and y dimensions.
-  SPEED: 0.5,
+  SPEED: 0.2,
 
   render: function() {
     context.beginPath();
@@ -93,7 +93,18 @@ Ball.prototype = {
   move: function(deltaTime) {
     this.x += deltaTime * this.speedX;
     this.y += deltaTime * this.speedY;
-  }
+  },
+
+  /**
+     @param rectangle {Object}
+     @return True iff the Ball collides with the rectangle.
+  */
+  collides: function(rectangle) {
+    return this.x - this.RADIUS < rectangle.x + rectangle.WIDTH
+      && this.x + this.RADIUS > rectangle.x
+      && this.y - this.RADIUS < rectangle.y + rectangle.HEIGHT
+      && this.y + this.RADIUS > rectangle.y;
+  },
 };
 
 var animate = window.requestAnimationFrame ||
@@ -125,6 +136,11 @@ function step(timeStamp) {
     ball.move(timeStamp - time);
   }
   time = timeStamp;
+
+  if (ball.collides(human.paddle) || ball.collides(computer.paddle)) {
+    ball.speedX = -ball.speedX;
+  }
+
   canvas.width = canvas.width;
   render();
   animate(step);
