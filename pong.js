@@ -73,8 +73,8 @@ Ball.prototype = {
   y: canvas.height / 2,
   RADIUS: 10,
 
-  // Pixels per millisecond in both x and y dimensions.
-  SPEED: 0.2,
+  // Pixels per frame in both x and y dimensions.
+  SPEED: 2,
 
   render: function() {
     context.beginPath();
@@ -90,9 +90,9 @@ Ball.prototype = {
     return Math.random() < 0.5 ? -speed : speed;
   },
 
-  move: function(deltaTime) {
-    this.x += deltaTime * this.speedX;
-    this.y += deltaTime * this.speedY;
+  move: function() {
+    this.x += this.speedX;
+    this.y += this.speedY;
   },
 
   /**
@@ -131,12 +131,8 @@ function render() {
   ball.render();
 }
 
-function step(timeStamp) {
-  if (time) {
-    ball.move(timeStamp - time);
-  }
-  time = timeStamp;
-
+function step() {
+  ball.move();
   if (ball.collides(human.paddle) || ball.collides(computer.paddle)) {
     ball.speedX = -ball.speedX;
   }
