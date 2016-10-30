@@ -140,6 +140,9 @@ function step(timeStamp) {
   if (ball.collides(human.paddle) || ball.collides(computer.paddle)) {
     ball.speedX = -ball.speedX;
   }
+  if (ball.y - ball.RADIUS < 0 || ball.y + ball.RADIUS > canvas.height) {
+    ball.speedY = -ball.speedY;
+  }
 
   canvas.width = canvas.width;
   render();
