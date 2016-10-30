@@ -59,34 +59,42 @@ Player.prototype = {
   },
 }
 
-var human = new Player(true);
-var computer = new Player(false);
-
-/*
-  Following the YAGNI principle. I don't want to split this into a class and
-  instance until I know how I'm going to use it. If it turns out that ball may
-  be null, we can make a possibly empty constructor with the starting info in
-  the prototype. If it turns out that we need multiple balls, the class design
-  should become more obvious.
+/**
+   @constructor
 */
-var ball = {
+function Ball() {
+  this.speedX = this.randomSpeed();
+  this.speedY = this.randomSpeed();
+}
+
+Ball.prototype = {
+  constructor: Ball,
   x: canvas.width / 2,
   y: canvas.height / 2,
   RADIUS: 10,
+
+  // Pixels per millisecond in both x and y dimensions.
+  SPEED: 0.5,
 
   render: function() {
     context.beginPath();
     context.arc(this.x, this.y, this.RADIUS, 0, Math.PI * 2);
     context.fill();
   },
-};
 
-function render() {
-  context.fillStyle = '#fff';
-  human.render();
-  computer.render();
-  ball.render();
-}
+  /**
+     @desc Decides on a random speed in the x or y dimension.
+  */
+  randomSpeed: function() {
+    var speed = this.SPEED;
+    return Math.random() < 0.5 ? -speed : speed;
+  },
+
+  move: function(deltaTime) {
+    this.x += deltaTime * this.speedX;
+    this.y += deltaTime * this.speedY;
+  }
+};
 
 var animate = window.requestAnimationFrame ||
   window.webkitRequestAnimationFrame ||
@@ -97,7 +105,26 @@ var animate = window.requestAnimationFrame ||
     window.setTimeout(callback, 1000 / 60);
   };
 
+var human = new Player(true);
+var computer = new Player(false);
+
+var ball = new Ball();
+
+// Current time.
+var time;
+
+function render() {
+  context.fillStyle = '#fff';
+  human.render();
+  computer.render();
+  ball.render();
+}
+
 function step(timeStamp) {
+  if (time) {
+    ball.move(timeStamp - time);
+  }
+  time = timeStamp;
   canvas.width = canvas.width;
   render();
   animate(step);
