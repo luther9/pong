@@ -22,14 +22,16 @@ Paddle.prototype = {
   WIDTH: 20,
   HEIGHT: 100,
 
-  // Pixels per key press.
-  SPEED: 50,
-
-  move: function(isUp) {
+  /**
+     Move the paddle.
+     @param {boolean} isUp - Whether to move up or down.
+     @param {number} speed - The number of pixels to move.
+  */
+  move: function(isUp, speed) {
     if (isUp) {
-      this.y = Math.max(0, this.y - this.SPEED);
+      this.y = Math.max(0, this.y - speed);
     } else {
-      this.y = Math.min(canvas.height - this.HEIGHT, this.y + this.SPEED);
+      this.y = Math.min(canvas.height - this.HEIGHT, this.y + speed);
     }
   },
 
@@ -41,10 +43,12 @@ Paddle.prototype = {
 /**
    Holds the paddle and score for each player.
    @constructor
-   @param {boolean} isLeft - True iff this is the player on the left.
+   @param {boolean} isLeft - True if this is a human player on the left,
+   otherwise, this is the computer player on the right.
 */
 function Player(isLeft) {
   this.paddle = new Paddle(isLeft);
+  this.speed = isLeft ? 50 : 1.5;
 }
 
 Player.prototype = {
@@ -55,7 +59,7 @@ Player.prototype = {
   },
 
   move: function(isUp) {
-    this.paddle.move(isUp);
+    this.paddle.move(isUp, this.speed);
   },
 }
 
@@ -121,8 +125,9 @@ var computer = new Player(false);
 
 var ball = new Ball();
 
-// Current time.
-var time;
+computer.update = function() {
+  this.move(ball.y <= this.paddle.y + this.paddle.HEIGHT / 2);
+};
 
 function render() {
   context.fillStyle = '#fff';
@@ -139,6 +144,8 @@ function step() {
   if (ball.y - ball.RADIUS < 0 || ball.y + ball.RADIUS > canvas.height) {
     ball.speedY = -ball.speedY;
   }
+
+  computer.update();
 
   canvas.width = canvas.width;
   render();
