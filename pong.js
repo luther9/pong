@@ -48,11 +48,18 @@ Paddle.prototype = {
 */
 function Player(isLeft) {
   this.paddle = new Paddle(isLeft);
-  this.speed = isLeft ? 50 : 1.5;
+  if (isLeft) {
+    this.speed = 50;
+    this.goal = this.GOAL_WIDTH;
+  } else {
+    this.speed = 1.5;
+    this.goal = canvas.width - this.GOAL_WIDTH;
+  }
 }
 
 Player.prototype = {
   constructor: Player,
+  GOAL_WIDTH: EDGE_TO_PADDLE + Paddle.prototype.WIDTH,
 
   render: function() {
     this.paddle.render();
@@ -140,6 +147,8 @@ function step() {
   ball.move();
   if (ball.collides(human.paddle) || ball.collides(computer.paddle)) {
     ball.speedX = -ball.speedX;
+  } else if (ball.x < human.goal || ball.x > computer.goal) {
+    ball = new Ball();
   }
   if (ball.y - ball.RADIUS < 0 || ball.y + ball.RADIUS > canvas.height) {
     ball.speedY = -ball.speedY;
