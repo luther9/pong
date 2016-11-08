@@ -5,6 +5,8 @@ var context = canvas.getContext('2d');
 
 // Space between the side edge of the canvas and the paddle.
 var EDGE_TO_PADDLE = 5;
+// Space between top of canvas and score.
+var TOP_TO_SCORE = 50;
 
 /**
    The paddle at either side of the canvas.
@@ -28,14 +30,13 @@ Paddle.prototype = {
      @param {number} speed - The number of pixels to move.
   */
   move: function(isUp, speed) {
-    if (isUp) {
-      this.y = Math.max(0, this.y - speed);
-    } else {
-      this.y = Math.min(canvas.height - this.HEIGHT, this.y + speed);
-    }
+    this.y = isUp
+      ? Math.max(0, this.y - speed)
+      : Math.min(canvas.height - this.HEIGHT, this.y + speed);
   },
 
   render: function() {
+    context.fillStyle = '#fff';
     context.fillRect(this.x, this.y, this.WIDTH, this.HEIGHT);
   },
 };
@@ -51,9 +52,13 @@ function Player(isLeft) {
   if (isLeft) {
     this.speed = 50;
     this.goal = this.GOAL_WIDTH;
+    this.scoreAlign = 'right';
+    this.scoreX = canvas.width / 2 - TOP_TO_SCORE;
   } else {
     this.speed = 1.5;
     this.goal = canvas.width - this.GOAL_WIDTH;
+    this.scoreAlign = 'left';
+    this.scoreX = canvas.width / 2 + TOP_TO_SCORE;
   }
 }
 
@@ -64,6 +69,10 @@ Player.prototype = {
 
   render: function() {
     this.paddle.render();
+    context.font = '100px sans-serif';
+    context.textBaseline = 'top';
+    context.fillStyle = '#0f0';
+    context.fillText(this.score, this.scoreX, TOP_TO_SCORE);
   },
 
   move: function(isUp) {
@@ -89,6 +98,7 @@ Ball.prototype = {
   SPEED: 2,
 
   render: function() {
+    context.fillStyle = '#fff';
     context.beginPath();
     context.arc(this.x, this.y, this.RADIUS, 0, Math.PI * 2);
     context.fill();
@@ -138,7 +148,6 @@ computer.update = function() {
 };
 
 function render() {
-  context.fillStyle = '#fff';
   human.render();
   computer.render();
   ball.render();
