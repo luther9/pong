@@ -71,6 +71,7 @@ Player.prototype = {
     this.paddle.render();
     context.font = '100px sans-serif';
     context.textBaseline = 'top';
+    context.textAlign = this.scoreAlign;
     context.fillStyle = '#0f0';
     context.fillText(this.score, this.scoreX, TOP_TO_SCORE);
   },
@@ -163,24 +164,44 @@ function render() {
   ball.render();
 }
 
+/**
+   Shows the end game screen and instructs the user to reload to play again.
+   @param message {string} A message to the user.
+*/
+function endGame(message) {
+  context.font = '50px sans-serif';
+  context.textBaseline = 'top';
+  context.textAlign = 'center';
+  context.fillStyle = '#00f';
+  context.fillText(message, canvas.width / 2, 150);
+  context.fillText('Reload this page to play again.', canvas.width / 2, 300);
+}
+
 function step() {
   ball.move();
+  var winner;
   if (ball.collides(human.paddle) || ball.collides(computer.paddle)) {
     ball.speedX = -ball.speedX;
   } else if (ball.x < human.goal) {
-    computer.addScore();
+    winner = computer.addScore();
   } else if (ball.x > computer.goal) {
-    human.addScore();
+    winner = human.addScore();
   }
   if (ball.y - ball.RADIUS < 0 || ball.y + ball.RADIUS > canvas.height) {
     ball.speedY = -ball.speedY;
   }
 
-  computer.update();
+  if (winner === human) {
+    endGame('You win!');
+  } else if (winner === computer) {
+    endGame('You lose.');
+  } else {
+    computer.update();
 
-  canvas.width = canvas.width;
-  render();
-  animate(step);
+    canvas.width = canvas.width;
+    render();
+    animate(step);
+  }
 }
 
 function keydown(event) {
