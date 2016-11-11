@@ -78,6 +78,16 @@ Player.prototype = {
   move: function(isUp) {
     this.paddle.move(isUp, this.speed);
   },
+
+  /**
+     Increments the score and serves the ball. Returns this if the player wins.
+     @return this if the player wins, otherwise null.
+  */
+  addScore: function() {
+    ++this.score;
+    ball = new Ball();
+    return this.score >= 11 ? this : null;
+  }
 }
 
 /**
@@ -158,11 +168,9 @@ function step() {
   if (ball.collides(human.paddle) || ball.collides(computer.paddle)) {
     ball.speedX = -ball.speedX;
   } else if (ball.x < human.goal) {
-    ++computer.score;
-    ball = new Ball();
+    computer.addScore();
   } else if (ball.x > computer.goal) {
-    ++human.score;
-    ball = new Ball();
+    human.addScore();
   }
   if (ball.y - ball.RADIUS < 0 || ball.y + ball.RADIUS > canvas.height) {
     ball.speedY = -ball.speedY;
